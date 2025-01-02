@@ -1,20 +1,15 @@
-
-
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 
-import 'dio_client.dart';
+import '../dio_client.dart';
 
-class ApiProduct{
-
-
+class ApiProduct {
   final DioClient _dioClient;
 
   ApiProduct(this._dioClient);
 
   final logger = Logger();
 
-  //get Products
   Future<List<Map<String, dynamic>>> getProducts(String jwtToken) async {
     try {
       final response = await _dioClient.dio.get(
@@ -26,16 +21,13 @@ class ApiProduct{
         ),
       );
       if (response.statusCode == 200) {
-        print(response.data);
         return List<Map<String, dynamic>>.from(response.data);
-
       } else {
         throw Exception('Failed to get products');
       }
     } catch (e) {
-      print(e);
+      logger.e('Error occurred: $e');
       throw Exception('Error occurred: $e');
-
     }
   }
 }

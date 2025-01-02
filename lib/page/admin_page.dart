@@ -1,7 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myfirstproject/config/colors.dart';
 
 class AdminPage extends StatefulWidget{
   const AdminPage({super.key});
@@ -54,20 +54,27 @@ class _AdminState extends State<AdminPage>{
        backgroundColor: Colors.blueGrey,
      ),
 
-     bottomNavigationBar: BottomNavigationBar(
-         backgroundColor: Colors.blueGrey,
-         currentIndex: _currentIndex,
-         type: BottomNavigationBarType.fixed,
-         onTap: (index){
-           setState(() {
-             _currentIndex=index;
-           });
-         },
-         items:  const [
-           BottomNavigationBarItem(icon: Icon(Icons.home),label:'Home'),
-           BottomNavigationBarItem(icon: Icon(Icons.alarm),label: 'Reminder'),
-           BottomNavigationBarItem(icon: Icon(Icons.person),label: 'Profile')
-         ]
+     bottomNavigationBar: Container(
+       decoration: const BoxDecoration(
+         gradient: LinearGradient(colors: [blueBgColor,blueBgColor1])
+       ),
+       child: BottomNavigationBar(
+           backgroundColor: Colors.transparent,
+           unselectedItemColor: Colors.white38,
+           selectedItemColor: Colors.white,
+           currentIndex: _currentIndex,
+           type: BottomNavigationBarType.fixed,
+           onTap: (index){
+             setState(() {
+               _currentIndex=index;
+             });
+           },
+           items:  const [
+             BottomNavigationBarItem(icon: Icon(Icons.home),label:'Home'),
+             BottomNavigationBarItem(icon: Icon(Icons.alarm),label: 'Reminder'),
+             BottomNavigationBarItem(icon: Icon(Icons.person),label: 'Profile')
+           ]
+       ),
      ),
      body: GridView.builder(
        itemCount: image.length,

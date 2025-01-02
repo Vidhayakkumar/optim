@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:myfirstproject/page/Product_Screen.dart';
+import 'package:myfirstproject/config/colors.dart';
+import 'package:myfirstproject/page/product_page.dart';
+import 'package:myfirstproject/tasks/tasks_lists.dart';
 
 class EmployeeScreen extends StatefulWidget{
   const EmployeeScreen({super.key});
@@ -50,21 +52,28 @@ class _EmployeeScreenState extends State<EmployeeScreen>{
 
        ),
 
-       bottomNavigationBar: BottomNavigationBar(
-         backgroundColor: Colors.blueGrey,
-         currentIndex: _currentIndex,
-         type: BottomNavigationBarType.fixed,
-           onTap: (index){
-           setState(() {
-             _currentIndex=index;
-           });
-           },
-           items:  const [
-             BottomNavigationBarItem(icon: Icon(Icons.home),label:'Home'),
-              BottomNavigationBarItem(icon: Icon(Icons.notifications_active),label: "Notifications"),
-              BottomNavigationBarItem(icon: Icon(Icons.alarm),label: 'Reminder'),
-              BottomNavigationBarItem(icon: Icon(Icons.person),label: 'Profile')
-           ]
+       bottomNavigationBar: Container(
+         decoration: const BoxDecoration(
+           gradient: LinearGradient(colors: [blueBgColor,blueBgColor1])
+         ),
+         child: BottomNavigationBar(
+           backgroundColor: Colors.transparent,
+             unselectedItemColor: Colors.white38,
+             selectedItemColor: Colors.white,
+           currentIndex: _currentIndex,
+           type: BottomNavigationBarType.fixed,
+             onTap: (index){
+             setState(() {
+               _currentIndex=index;
+             });
+             },
+             items:  const [
+               BottomNavigationBarItem(icon: Icon(Icons.home),label:'Home'),
+                BottomNavigationBarItem(icon: Icon(Icons.notifications_active),label: "Notifications"),
+                BottomNavigationBarItem(icon: Icon(Icons.alarm),label: 'Reminder'),
+                BottomNavigationBarItem(icon: Icon(Icons.person),label: 'Profile')
+             ]
+         ),
        ),
        body:GridView.builder(
          itemCount: image.length,
@@ -76,6 +85,8 @@ class _EmployeeScreenState extends State<EmployeeScreen>{
                  switch(index){
                    case 11: Navigator.push(context,
                        MaterialPageRoute(builder: (_)=>const ProductScreen()));
+                   case 13: Navigator.push(context, MaterialPageRoute(builder: (_)=>TaskList()));
+
                  }
                },
                child: Card(

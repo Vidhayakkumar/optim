@@ -1,10 +1,7 @@
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
-
-
 
 enum ApiErrorType { Network, Server, Unexpected }
 
@@ -40,16 +37,11 @@ class DioClient {
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           var connectivityResult = await Connectivity().checkConnectivity();
-          if (connectivityResult == ConnectivityResult.none){
+          if (connectivityResult == ConnectivityResult.none) {
             logger.e('No internet connection');
             throw ApiException('No internet connection', ApiErrorType.Network);
           }
-          handler
-              .
-          next
-            (
-              options
-          );
+          handler.next(options);
         },
         onResponse: (response, handler) {
           if (response.statusCode! >= 400) {
@@ -66,8 +58,7 @@ class DioClient {
               errorMessage = 'Connection timed out';
               break;
             case DioExceptionType.receiveTimeout:
-              errorMessage
-              = 'Server did not respond in time';
+              errorMessage = 'Server did not respond in time';
               break;
             case DioExceptionType.sendTimeout:
               errorMessage = 'Send timeout in connection';
@@ -98,4 +89,3 @@ class DioClient {
 
   Dio get dio => _dio;
 }
-
