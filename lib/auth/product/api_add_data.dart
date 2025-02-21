@@ -1,7 +1,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
-import 'package:myfirstproject/auth/dio_client.dart';
+import 'package:myfirstproject/auth/api_service/dio_client.dart';
 
 class ApiAddData{
   final DioClient _dioClient;

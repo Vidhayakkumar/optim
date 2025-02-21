@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:myfirstproject/auth/api_service/loginscreen.dart';
+import 'package:myfirstproject/chat/chat_home.dart';
 import 'package:myfirstproject/onboarding/DotsIndicator.dart';
-import 'package:myfirstproject/page/product_page.dart';
+import 'package:myfirstproject/page/employee_page.dart';
+import 'package:myfirstproject/product/product_page.dart';
+import 'package:myfirstproject/profile/profile_screen.dart';
+import 'package:myfirstproject/tasks/add_tasks.dart';
 import 'package:myfirstproject/tasks/update_task.dart';
 import 'package:myfirstproject/tasks/tasks_lists.dart';
 
@@ -24,7 +29,8 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         debugShowCheckedModeBanner: false,
-        home: TaskList()
+        home: OnboardingScreen()
     );
   }
 }
+

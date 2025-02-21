@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 
-import '../dio_client.dart';
+import '../api_service/dio_client.dart';
 
 class ApiProduct {
   final DioClient _dioClient;

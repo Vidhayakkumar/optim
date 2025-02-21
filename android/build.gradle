@@ -14,5 +14,7 @@ subprojects {
 }
 
 tasks.register("clean", Delete) {
-    delete rootProject.buildDir
+
+ //Root-level build.gradle file
+ delete rootProject.buildDir
 }

@@ -1,29 +1,16 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:myfirstproject/config/colors.dart';
 
+import '../auth/api_service/loginscreen.dart';
 
-import '../auth/loginscreen.dart';
-import 'screen1.dart';
-
-
-class Onboarding_2 extends StatefulWidget {
+class OnBoardingScreen2 extends StatefulWidget {
+  const OnBoardingScreen2({super.key});
 
   @override
-  State<Onboarding_2> createState() => _Onboarding_2State();
+  State<OnBoardingScreen2> createState() => _OnBoardingScreen2State();
 }
 
-class _Onboarding_2State extends State<Onboarding_2> {
-  final PageController _pageController = PageController();
-
-  int _currentPage = 0;
-
-  // List of items for the PageView
-  final List<Widget> _pages = [
-    Screen1(),
-    Onboarding_2()
-  ];
-
+class _OnBoardingScreen2State extends State<OnBoardingScreen2> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -33,42 +20,34 @@ class _Onboarding_2State extends State<Onboarding_2> {
           children: [
             Stack(
               children: [
-
                 Image.asset("assets/images/Vector.png"),
                 Positioned(
                   top: 10,
                   right: 20,
-                  child: ElevatedButton(onPressed: () {
-
-                    Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (_)=>LoginScreen()));
-
-                  }, child: Text("SKIP")),
-
-
+                  child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (_) => LoginScreen()));
+                      },
+                      child: Text("SKIP")),
                 ),
-
                 const Positioned(
                   left: 20,
                   top: 133,
-                  child: Text("An Ideal Platform To",
+                  child: Text(
+                    "An Ideal Platform To",
                     style: TextStyle(
                       fontSize: 20,
-
-
-                    ),),
+                    ),
+                  ),
                 ),
-
               ],
-
             ),
-            const Text("   Grow Your Business",
-              style: TextStyle(
-                  fontSize: 20,
-                  color: textColor
-              ),),
+            const Text(
+              "   Grow Your Business",
+              style: TextStyle(fontSize: 20, color: textColor),
+            ),
             Image.asset("assets/images/onsecond.jpg"),
-
             const SizedBox(
               height: 30,
             ),
@@ -77,26 +56,26 @@ class _Onboarding_2State extends State<Onboarding_2> {
               child: SizedBox(
                   width: 340,
                   height: 50,
-                  child: ElevatedButton(onPressed: () {
-                    
-                    Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (_)=>LoginScreen())
-                    );
-                    
-                  }, child: Text("START FOR FREE",
-                    style: TextStyle(
-                        color: Colors.white
-                    ),),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const LoginScreen()));
+                    },
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromRGBO(
-                            13, 80, 175, 1.0),
+                        backgroundColor: const Color.fromRGBO(13, 80, 175, 1.0),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(11)
-                        )
+                            borderRadius: BorderRadius.circular(11))),
+                    child: const Text(
+                      "START FOR FREE",
+                      style: TextStyle(color: Colors.white),
                     ),
                   )),
             ),
-            SizedBox(height: 50,),
+            const SizedBox(
+              height: 50,
+            ),
             Image.asset("assets/images/dev.png")
           ],
         ),

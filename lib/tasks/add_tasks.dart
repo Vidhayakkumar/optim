@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gradient_app_bar/flutter_gradient_app_bar.dart';
-import 'package:myfirstproject/auth/dio_client.dart';
-import 'package:myfirstproject/auth/lead_of_account.dart';
+import 'package:myfirstproject/auth/api_service/dio_client.dart';
+import 'package:myfirstproject/auth/task/lead_of_account.dart';
 import 'package:myfirstproject/auth/task/api_add_task.dart';
 import 'package:myfirstproject/config/colors.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddTasks extends StatefulWidget {
   final Future<void> Function() onUpdate;
@@ -24,17 +25,16 @@ class AddTasksState extends State<AddTasks> {
   final ApiAddTask _addTask = ApiAddTask(DioClient());
 
   var apiList = [];
-  String jwtToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqaW1AZ21haWwuY29tIiwiaWF0IjoxNzM1NjYwMjkzLCJleHAiOjE3MzU4NDAyOTN9.UGOeL_xx5rINSNyfjK4ROKmKOfdtHb_KGMGxXLToYq1dHrlBgNYoR9BGayKCethVL9xl1Wbt2kkbYkIHpLllrw";
-
+  String? jwtToken;
   String? selectedLead;
   String? selectedStatus;
   String? selectedPriority;
   String? selectedAccount;
   String? selectedDueDateTime;
   String? selectedTaskReminderDateTime;
-
   var lead;
   var leadId;
+  bool _isLoading=false;
 
   List<Map<String, dynamic>> leadsList = [];
   List<String> accountList = [];
@@ -65,9 +65,74 @@ class AddTasksState extends State<AddTasks> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _loadJwtToken().then((_){
+      setState(() {
+        addDataAccountLis();
+        fetchLeadData();
+      });
+    });
+  }
+
+  void addDataAccountLis() {
+    switch (selectedLead) {
+      case 'Lead':
+        accountList =
+            leadsList.map((lead) => lead['customerName'].toString()).toList();
+        break;
+      case 'Account':
+        accountList =
+            leadsList.map((lead) => lead['accountName'].toString()).toList();
+        break;
+      case 'Contact':
+        accountList =
+            leadsList.map((lead) => lead['fullName'].toString()).toList();
+        break;
+    }
+  }
+
+  void fetchLeadData() {
+    switch (selectedLead) {
+      case 'Lead':
+        fetchLead('/employee/leadlist');
+        break;
+      case 'Account':
+        fetchLead('/employee/accountlist');
+        break;
+      case 'Contact':
+        fetchLead('/employee/contactlist');
+        break;
+    }
+  }
+
+  Future<void> fetchLead(String baseUrl) async {
+    try {
+      // Fetch the leads data and store it in leadsList
+      List<Map<String, dynamic>> fetchedLeads =
+      await _leadOfAccount.getLeadOfAccount(baseUrl, jwtToken!);
+      setState(() {
+        leadsList = fetchedLeads;
+        _isLoading=false;
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Future<void> _loadJwtToken()async{
+    try{
+      SharedPreferences prefs= await SharedPreferences.getInstance();
+      jwtToken = prefs.getString('jwtToken');
+    }catch(e){
+      throw Exception('Error Occurred $e');
+    }
+
+  }
+
+  @override
   Widget build(BuildContext context) {
     addDataAccountLis();
-
     return MaterialApp(
       home: Scaffold(
         appBar: PreferredSize(
@@ -87,9 +152,11 @@ class AddTasksState extends State<AddTasks> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    customTextField("Task Owner Name", "Task Owner Name", taskOwnerNameController, 1, 50),
+                    customTextField("Task Owner Name", "Task Owner Name",
+                        taskOwnerNameController, 1, 50),
                     const SizedBox(height: 5),
-                    customTextField("Subject", 'Subject', subjectController, 1, 50),
+                    customTextField(
+                        "Subject", 'Subject', subjectController, 1, 50),
 
                     // Due Date box
                     Column(
@@ -114,12 +181,14 @@ class AddTasksState extends State<AddTasks> {
                                 padding: const EdgeInsets.only(left: 8),
                                 child: Text(
                                   selectedDueDateTime ?? 'dd/mm/yy',
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
                                 ),
                               ),
                               IconButton(
                                 onPressed: () async {
-                                  String? result = await selectDateTime(context);
+                                  String? result = await selectDateTime(
+                                      context);
                                   if (result != null) {
                                     setState(() {
                                       selectedDueDateTime = result;
@@ -159,7 +228,8 @@ class AddTasksState extends State<AddTasks> {
                                   value: selectedStatus,
                                   hint: const Text("Select "),
                                   isExpanded: true,
-                                  items: statusList.map<DropdownMenuItem<String>>((String value) {
+                                  items: statusList.map<
+                                      DropdownMenuItem<String>>((String value) {
                                     return DropdownMenuItem<String>(
                                       value: value,
                                       child: Text(value),
@@ -203,7 +273,8 @@ class AddTasksState extends State<AddTasks> {
                                   value: selectedPriority,
                                   hint: const Text("Select "),
                                   isExpanded: true,
-                                  items: priorityList.map<DropdownMenuItem<String>>((String value) {
+                                  items: priorityList.map<
+                                      DropdownMenuItem<String>>((String value) {
                                     return DropdownMenuItem<String>(
                                       value: value,
                                       child: Text(value),
@@ -246,12 +317,14 @@ class AddTasksState extends State<AddTasks> {
                                 padding: const EdgeInsets.only(left: 8),
                                 child: Text(
                                   selectedTaskReminderDateTime ?? 'dd/mm/yy',
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
                                 ),
                               ),
                               IconButton(
                                 onPressed: () async {
-                                  String? result = await selectDateTime(context);
+                                  String? result = await selectDateTime(
+                                      context);
                                   if (result != null) {
                                     setState(() {
                                       selectedTaskReminderDateTime = result;
@@ -275,85 +348,101 @@ class AddTasksState extends State<AddTasks> {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
-                    Row(
-                      children: [
-                        Container(
-                          width: 120,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: DropdownButtonHideUnderline(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: DropdownButton<String>(
-                                      value: selectedLead,
-                                      hint: const Text("Select "),
-                                      isExpanded: true,
-                                      items: LAC_List.map<DropdownMenuItem<String>>((String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value),
-                                        );
-                                      }).toList(),
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          selectedLead = newValue;
-                                          fetchLeadData();
-                                        });
-                                      },
+                  Center(
+                    child: _isLoading ? const CircularProgressIndicator():  Row(
+                        children: [
+                          Container(
+                            width: 120,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: DropdownButtonHideUnderline(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 10),
+                                      child: DropdownButton<String>(
+                                        value: selectedLead,
+                                        hint: const Text("Select "),
+                                        isExpanded: true,
+                                        items: LAC_List.map<
+                                            DropdownMenuItem<String>>((
+                                            String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? newValue) {
+
+                                          setState(() {
+                                            _isLoading=true;
+                                            selectedAccount=null;
+                                            selectedLead = newValue;
+
+                                            fetchLeadData();
+
+
+                                            // addDataAccountLis();
+                                          });
+
+                                        },
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 30),
-                        Container(
-                          width: 210,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: DropdownButtonHideUnderline(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: DropdownButton<String>(
-                                      value: selectedAccount,
-                                      hint: const Text("Select Option "),
-                                      isExpanded: true,
-                                      items: accountList.map<DropdownMenuItem<String>>((String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value),
-                                        );
-                                      }).toList(),
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          selectedAccount = newValue;
-                                        });
-                                      },
+                          const SizedBox(width: 30),
+                          Container(
+                            width: 210,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: DropdownButtonHideUnderline(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 10),
+                                      child: DropdownButton<String>(
+                                        value: selectedAccount,
+                                        hint: const Text("Select Option "),
+                                        isExpanded: true,
+                                        items: accountList.map<
+                                            DropdownMenuItem<String>>((
+                                            String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            selectedAccount = newValue;
+                                          });
+                                        },
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                  ),
 
                     // Task Description Text Field
-                    customTextField("Task Description", "", taskDescriptionController, 3, 100),
+                    customTextField(
+                        "Task Description", "", taskDescriptionController, 3,
+                        100),
                     const SizedBox(height: 15),
 
                     // Action buttons (Add Task, Reset)
@@ -362,9 +451,11 @@ class AddTasksState extends State<AddTasks> {
                       children: [
                         GestureDetector(
                           onTap: () async {
-                            var taskOwnerName = taskOwnerNameController.text.toString();
+                            var taskOwnerName = taskOwnerNameController.text
+                                .toString();
                             var subject = subjectController.text.toString();
-                            var description = taskDescriptionController.text.toString();
+                            var description = taskDescriptionController.text
+                                .toString();
                             var deuDate = selectedDueDateTime.toString();
                             var taskStatus = selectedStatus.toString();
                             var taskPriority = selectedPriority.toString();
@@ -373,17 +464,20 @@ class AddTasksState extends State<AddTasks> {
                             var selectedAccountId = selectedAccount.toString();
                             if (selectedLead == "Lead") {
                               lead = leadsList.firstWhere(
-                                    (lead) => lead['customerName'] == selectedAccountId,
+                                    (lead) =>
+                                lead['customerName'] == selectedAccountId,
                               );
                               leadId = lead['leadId'];
                             } else if (selectedLead == "Account") {
                               lead = leadsList.firstWhere(
-                                    (account) => account['accountName'] == selectedAccountId,
+                                    (account) =>
+                                account['accountName'] == selectedAccountId,
                               );
                               leadId = lead['accountId'];
                             } else if (selectedLead == 'Contact') {
                               lead = leadsList.firstWhere(
-                                    (contact) => contact['fullName'] == selectedAccountId,
+                                    (contact) =>
+                                contact['fullName'] == selectedAccountId,
                               );
                               leadId = lead['contactid'];
                             }
@@ -391,7 +485,7 @@ class AddTasksState extends State<AddTasks> {
                             String leadI = leadId.toString();
 
                             await _addTask.addTask(
-                              jwtToken,
+                              jwtToken!,
                               taskOwnerName,
                               subject,
                               deuDate,
@@ -407,7 +501,8 @@ class AddTasksState extends State<AddTasks> {
                             Navigator.pop(context);
                             setState(() {});
                           },
-                          child: customElevatedBottom(bgAddTaskColor, "Add Task", 100, 40),
+                          child: customElevatedBottom(
+                              bgAddTaskColor, "Add Task", 100, 40),
                         ),
                         const SizedBox(width: 20),
                         GestureDetector(
@@ -420,7 +515,8 @@ class AddTasksState extends State<AddTasks> {
                               selectedTaskReminderDateTime = "dd/mm/yy";
                             });
                           },
-                          child: customElevatedBottom(bgResetColor, "Reset", 100, 40),
+                          child: customElevatedBottom(
+                              bgResetColor, "Reset", 100, 40),
                         ),
                       ],
                     ),
@@ -433,35 +529,6 @@ class AddTasksState extends State<AddTasks> {
       ),
     );
   }
-
-  void addDataAccountLis() {
-    switch (selectedLead) {
-      case 'Lead':
-        accountList = leadsList.map((lead) => lead['customerName'] as String).toList();
-        break;
-      case 'Account':
-        accountList = leadsList.map((lead) => lead['accountName'] as String).toList();
-        break;
-      case 'Contact':
-        accountList = leadsList.map((lead) => lead['fullName'] as String).toList();
-        break;
-    }
-  }
-
-  void fetchLeadData() {
-    switch (selectedLead) {
-      case 'Lead':
-        fetchLead('/employee/leadlist');
-        break;
-      case 'Account':
-        fetchLead('/employee/accountlist');
-        break;
-      case 'Contact':
-        fetchLead('/employee/contactlist');
-        break;
-    }
-  }
-
 
 
   Widget customTextField(String title, String hint,
@@ -498,7 +565,7 @@ class AddTasksState extends State<AddTasks> {
       ],
     );
   }
-
+}
   Widget customElevatedBottom(
       Color color, String text, double cWidth, double cHeight) {
     return Container(
@@ -514,20 +581,7 @@ class AddTasksState extends State<AddTasks> {
     );
   }
 
-  Future<void> fetchLead(String baseUrl) async {
-    try {
-      // Fetch the leads data and store it in leadsList
-      List<Map<String, dynamic>> fetchedLeads =
-      await _leadOfAccount.getLeadOfAccount(baseUrl, jwtToken);
 
-      setState(() {
-        leadsList = fetchedLeads;
-      });
-    } catch (e) {
-      print('Error: $e');
-    }
-  }
-}
 
 Future<String?> selectDateTime(BuildContext context) async {
   // Select date

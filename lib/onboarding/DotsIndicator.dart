@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-import '../main.dart';
 import 'screen1.dart';
 import 'screen2.dart';
 
@@ -19,8 +18,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   // List of items for the PageView
   final List<Widget> _pages = [
-    Screen1(),
-    Onboarding_2()
+    OnBoardingScreen1(),
+    OnBoardingScreen2()
 
   ];
 

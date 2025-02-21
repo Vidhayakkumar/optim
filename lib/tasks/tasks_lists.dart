@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gradient_app_bar/flutter_gradient_app_bar.dart';
-import 'package:myfirstproject/auth/dio_client.dart';
+import 'package:myfirstproject/auth/api_service/dio_client.dart';
 import 'package:myfirstproject/auth/task/get_task.dart';
 import 'package:myfirstproject/config/colors.dart';
 import 'package:myfirstproject/model/task_model.dart';
 import 'package:myfirstproject/tasks/add_tasks.dart';
 import 'package:myfirstproject/tasks/update_task.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TaskList extends StatefulWidget {
   const TaskList({super.key});
@@ -18,9 +19,7 @@ class TaskListState extends State<TaskList> {
   final ApiTask _apiTask = ApiTask(DioClient());
 
   late Future<List<TaskModel>> futureApiList;
-
-  String jwtToken ="eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqaW1AZ21haWwuY29tIiwiaWF0IjoxNzM1NjYwMjkzLCJleHAiOjE3MzU4NDAyOTN9.UGOeL_xx5rINSNyfjK4ROKmKOfdtHb_KGMGxXLToYq1dHrlBgNYoR9BGayKCethVL9xl1Wbt2kkbYkIHpLllrw";
-
+  String? jwtToken;
   var _currentIndex = 0;
 
 
@@ -28,7 +27,17 @@ class TaskListState extends State<TaskList> {
   @override
   void initState() {
     super.initState();
-    futureApiList = getData();
+    _loadJwtToken().then((_){
+      setState(() {
+        futureApiList = getData();
+      });
+    });
+
+  }
+
+  Future<void> _loadJwtToken()async{
+    SharedPreferences prefs=await SharedPreferences.getInstance();
+    jwtToken = prefs.getString('jwtToken');
   }
 
   @override
@@ -66,8 +75,7 @@ class TaskListState extends State<TaskList> {
             },
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.notifications_active), label: 'Notification'),
+              BottomNavigationBarItem(icon: Icon(Icons.notifications_active), label: 'Notification'),
               BottomNavigationBarItem(icon: Icon(Icons.alarm), label: 'Reminder'),
               BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
             ],
@@ -106,7 +114,7 @@ class TaskListState extends State<TaskList> {
                             return GestureDetector(
                               onTap: (){
                                 Navigator.push(context, MaterialPageRoute(builder: (_)=>UpdateTask(
-                                  product:product.toJson(),onUpdate:getData
+                                 product:product.toJson(),onUpdate:getData
                                 ))).then((_){
                                   setState(() {
                                     futureApiList=getData();
@@ -280,8 +288,13 @@ class TaskListState extends State<TaskList> {
   }
 
   Future<List<TaskModel>> getData() async {
-    var result = await _apiTask.getTasks(jwtToken);
-    return result.map((json) => TaskModel.fromJson(json)).toList();
+    if(jwtToken != null){
+      var result = await _apiTask.getTasks(jwtToken!);
+      return result.map((json) => TaskModel.fromJson(json)).toList();
+    }else{
+      return [];
+    }
+
   }
 
   Widget changeImage(String status) {

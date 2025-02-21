@@ -1,11 +1,4 @@
 
-
-import 'dart:convert';
-
-// TaskModel dataModelFromJson(String str)=>TaskModel.fromJson(json.decode(str));
-// String dataModelToJson(TaskModel data)=> json.encode(data.toJson());
-
-
 class TaskModel {
   int? id;
   String? taskOwner;
@@ -44,7 +37,8 @@ class TaskModel {
         this.leadIdOrAccountId,
         this.employeeId,
         this.employeeIds,
-        this.assginTo});
+        this.assginTo
+    });
 
   TaskModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:myfirstproject/chat/chat_home.dart';
 import 'package:myfirstproject/config/colors.dart';
-import 'package:myfirstproject/page/product_page.dart';
+import 'package:myfirstproject/product/product_page.dart';
 import 'package:myfirstproject/tasks/tasks_lists.dart';
 
 class EmployeeScreen extends StatefulWidget{
@@ -83,10 +84,11 @@ class _EmployeeScreenState extends State<EmployeeScreen>{
              return GestureDetector(
                onTap: (){
                  switch(index){
-                   case 11: Navigator.push(context,
-                       MaterialPageRoute(builder: (_)=>const ProductScreen()));
-                   case 13: Navigator.push(context, MaterialPageRoute(builder: (_)=>TaskList()));
+                   case 11: Navigator.push(context, MaterialPageRoute(builder: (_)=>const ProductScreen()));
 
+                   case 13: Navigator.push(context, MaterialPageRoute(builder: (_)=>const TaskList()));
+
+                   case 6: Navigator.push(context, MaterialPageRoute(builder: (_)=>const ChatHome()));
                  }
                },
                child: Card(

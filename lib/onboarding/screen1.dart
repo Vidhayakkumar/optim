@@ -1,44 +1,24 @@
-import 'dart:ffi';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:myfirstproject/page/admin_page.dart';
-import 'package:myfirstproject/page/employee_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../auth/loginscreen.dart';
+import '../auth/api_service/loginscreen.dart';
 import '../main.dart';
 import 'screen2.dart';
 
-class Screen1 extends StatefulWidget {
-  const Screen1({super.key});
+class OnBoardingScreen1 extends StatefulWidget {
+  const OnBoardingScreen1({super.key});
 
   @override
-  State<Screen1> createState() => Screen1State();
+  State<OnBoardingScreen1> createState() => OnBoardingScreen1State();
 }
 
-class Screen1State extends State<Screen1> {
+class OnBoardingScreen1State extends State<OnBoardingScreen1> {
   final PageController _pageController = PageController();
-  int _currentPage = 0;
-
-  static const String KEYlOGIN = '';
-
-  @override
-  // List of items for the PageView
-  final List<Widget> _pages = [Screen1(), Onboarding_2()];
 
   @override
   void initState() {
     super.initState();
-    // whereToGo();
-
-    // Listen to the PageView controller to update the current page
     _pageController.addListener(() {
-      setState(() {
-        _currentPage = _pageController.page!.toInt();
-      });
+      setState(() {});
     });
   }
 
@@ -66,10 +46,12 @@ class Screen1State extends State<Screen1> {
                   right: 20,
                   child: ElevatedButton(
                       onPressed: () {
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (_) => LoginScreen()));
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const LoginScreen()));
                       },
-                      child: Text("SKIP")),
+                      child: const Text("SKIP")),
                 ),
                 Positioned(
                   left: mq.width * 0.03,
@@ -83,7 +65,7 @@ class Screen1State extends State<Screen1> {
                 ),
               ],
             ),
-            Text(
+            const Text(
               "  Grow Your Business",
               style: TextStyle(
                   fontSize: 20, color: Color.fromRGBO(2, 125, 195, 1)),
@@ -105,7 +87,7 @@ class Screen1State extends State<Screen1> {
             ),
             Container(
               padding: const EdgeInsets.only(left: 15),
-              child: CustomText(),
+              child: customText(),
             ),
             const SizedBox(
               height: 30,
@@ -120,17 +102,19 @@ class Screen1State extends State<Screen1> {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (_) => Onboarding_2()));
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => OnBoardingScreen2()));
                     },
-                    child: Text(
-                      "NEXT",
-                      style: TextStyle(color: Colors.white),
-                    ),
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Color.fromRGBO(13, 80, 175, 1.0),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(11))),
+                    child: const Text(
+                      "NEXT",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   )),
             ),
             SizedBox(
@@ -141,44 +125,26 @@ class Screen1State extends State<Screen1> {
         )));
   }
 
-  void whereToGo() async {
-    var sharedPref = await SharedPreferences.getInstance();
-    var isLoggedIn = sharedPref.getString(KEYlOGIN);
-
-    if (isLoggedIn == "") {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const Screen1()));
-    } else if (isLoggedIn == "ROLE_EMP") {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => EmployeeScreen()));
-    } else if (isLoggedIn == "ROLE_ADMIN") {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => AdminPage()));
-    } else {
-      // Navigator.pushReplacement(context,
-      // MaterialPageRoute(builder: (_)=>LoginScreen()));
-    }
+  Widget customText() {
+    return RichText(
+        text: const TextSpan(children: [
+      TextSpan(
+          text: "Grow Your ",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 17,
+          )),
+      TextSpan(
+          text: "SALES OPTIM",
+          style:
+              TextStyle(fontSize: 17, color: Color.fromRGBO(13, 80, 175, 1.0))),
+      TextSpan(
+          text: " Manager\nLeads Contacts & Opportunities\nWith ",
+          style: TextStyle(color: Colors.black, fontSize: 17)),
+      TextSpan(
+          text: "SALES OPTIM",
+          style:
+              TextStyle(fontSize: 17, color: Color.fromRGBO(13, 80, 175, 1.0)))
+    ]));
   }
-}
-
-Widget CustomText() {
-  return RichText(
-      text: const TextSpan(children: [
-    TextSpan(
-        text: "Grow Your ",
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: 17,
-        )),
-    TextSpan(
-        text: "SALES OPTIM",
-        style:
-            TextStyle(fontSize: 17, color: Color.fromRGBO(13, 80, 175, 1.0))),
-    TextSpan(
-        text: " Manager\nLeads Contacts & Opportunities\nWith ",
-        style: TextStyle(color: Colors.black, fontSize: 17)),
-    TextSpan(
-        text: "SALES OPTIM",
-        style: TextStyle(fontSize: 17, color: Color.fromRGBO(13, 80, 175, 1.0)))
-  ]));
 }
